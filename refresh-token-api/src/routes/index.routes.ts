@@ -1,9 +1,11 @@
 import { Router } from 'express'
 
+import AuthRoutes from './auth.routes'
+
 const routes = Router()
 
-routes.get('/', (_, res) => {
+const IndexRoutes = routes.get('/', (_, res) => {
   res.status(200).json({ message: 'Api is running!' })
 })
 
-export default routes
+export { IndexRoutes, AuthRoutes }
