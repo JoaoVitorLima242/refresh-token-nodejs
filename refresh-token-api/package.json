@@ -1,0 +1,45 @@
+{
+  "name": "boilerplate-node-ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node-dev --inspect --transpile-only --ignore-watch node_modules src/config/server.ts",
+    "lint": "eslint . --ext .ts",
+    "lint-fix": "eslint . --ext .ts --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/JoaoVitorLima242/boilerplate-node-ts.git"
+  },
+  "author": "JoaoVitorLima242",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JoaoVitorLima242/boilerplate-node-ts/issues"
+  },
+  "homepage": "https://github.com/JoaoVitorLima242/boilerplate-node-ts#readme",
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.15",
+    "@types/multer": "^1.4.7",
+    "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.48.2",
+    "@typescript-eslint/parser": "^5.48.2",
+    "eslint": "^8.32.0",
+    "eslint-config-prettier": "6.15.0",
+    "eslint-plugin-prettier": "3.2.0",
+    "prettier": "^2.8.3",
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.1.2",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1301.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongoose": "^5.13.10",
+    "multer": "^1.4.5-lts.1"
+  }
+}
