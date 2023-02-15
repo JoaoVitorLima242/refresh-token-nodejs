@@ -4,7 +4,7 @@ import mongoose from 'mongoose'
 
 import { AuthRoutes, IndexRoutes } from '../routes/index.routes'
 import { config } from './vars'
-import { HttpError, customErrorMiddleware } from '../utils/error'
+import { customErrorMiddleware } from '../utils/error'
 import logger from '../utils/logger'
 
 class App {
@@ -14,7 +14,6 @@ class App {
     this.express = express()
     this.database()
     this.routes()
-    this.middlewares()
     this.errorHandler()
   }
 
@@ -42,6 +41,10 @@ class App {
         logger.info('Mongo DB is ON!')
       },
     )
+  }
+
+  public errorHandler() {
+    this.express.use(customErrorMiddleware)
   }
 
   private routes() {
