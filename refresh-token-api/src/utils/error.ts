@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from 'express'
+import logger from './logger'
 
 type fn = (req: Request, res: Response) => Promise<any>
 
 export const errorHandler = (fn: fn) => {
   return async function (req: Request, res: Response, next: NextFunction) {
     try {
+      console.log(req.body)
       const result = await fn(req, res)
       res.json(result)
     } catch (e) {
@@ -19,7 +21,7 @@ export const customErrorMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log(error, 'aqui')
+  logger.error(error)
   res.status(error.statusCode || 500).send({ error: error.message })
 }
 

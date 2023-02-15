@@ -5,6 +5,7 @@ import mongoose from 'mongoose'
 import { AuthRoutes, IndexRoutes } from '../routes/index.routes'
 import { config } from './vars'
 import { HttpError, customErrorMiddleware } from '../utils/error'
+import logger from '../utils/logger'
 
 class App {
   public express: express.Application
@@ -24,12 +25,7 @@ class App {
   }
 
   private errorHandler() {
-    this.express.use(
-      (error: HttpError, req: Request, res: Response, _next: NextFunction) => {
-        console.log(error)
-        res.status(error.statusCode || 500).json({ error: error.message })
-      },
-    )
+    // this.express.use(customErrorMiddleware)
   }
 
   private database() {
@@ -43,7 +39,7 @@ class App {
         useFindAndModify: false,
       },
       () => {
-        console.log('Mongo DB is ON!')
+        logger.info('Mongo DB is ON!')
       },
     )
   }
