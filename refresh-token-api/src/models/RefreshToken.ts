@@ -8,4 +8,4 @@ const refreshTokenSchema = new Schema<IRefreshToken>({
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
 })
 
-export default model<IRefreshToken>('User', refreshTokenSchema)
+export default model<IRefreshToken>('RefreshToken', refreshTokenSchema)

@@ -5,50 +5,43 @@ import { IUser } from '../models/User'
 import { Response } from 'express'
 import { RefreshTokenModel, UserModel } from '../models'
 import argon2 from 'argon2'
+import { createAccessToken, createRefreshToken } from '../utils/token'
 
 class AuthController {
   public async signUp(req: RequestWithBody<IUser>, res: Response) {
     const { password, username } = req.body
 
-    const userInstance = new UserModel({
-      username,
-      password: await argon2.hash(password),
-    })
+    if (!password || !username)
+      return res.status(400).json({ error: 'Missing information' })
+    try {
+      const userInstance = new UserModel({
+        username,
+        password: await argon2.hash(password),
+      })
 
-    const refreshTokenInstance = new RefreshTokenModel({
-      owner: userInstance._id,
-    })
+      const refreshTokenInstance = new RefreshTokenModel({
+        owner: userInstance._id,
+      })
 
-    const refreshToken = this.createRefreshToken(
-      userInstance._id,
-      refreshTokenInstance._id,
-    )
-    const accessToken = this.createAccessToken(userInstance._id)
+      await userInstance.save()
+      await refreshTokenInstance.save()
 
-    res.status(200).json({
-      accessToken,
-      refreshToken,
-      id: userInstance._id,
-    })
-  }
-  public createAccessToken(userId: string) {
-    return jwt.sign(
-      {
-        userId,
-      },
-      config.JWT_ACCESS_TOKEN_SECRET,
-      { expiresIn: '10m' },
-    )
-  }
-  public createRefreshToken(userId: string, refreshTokenId: string) {
-    return jwt.sign(
-      {
-        userId,
-        tokenId: refreshTokenId,
-      },
-      config.JWT_REFRESH_TOKEN_SECRET,
-      { expiresIn: '30d' },
-    )
+      const refreshToken = createRefreshToken(
+        userInstance._id,
+        refreshTokenInstance._id,
+      )
+      const accessToken = createAccessToken(userInstance._id)
+
+      res.status(200).json({
+        accessToken,
+        refreshToken,
+        id: userInstance._id,
+        user: userInstance,
+      })
+    } catch (error) {
+      console.log(error)
+      res.status(400).json({ error: 'Sign up failed' })
+    }
   }
 }
 
