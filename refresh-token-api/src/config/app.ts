@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express'
+import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
 
@@ -12,6 +12,7 @@ class App {
 
   public constructor() {
     this.express = express()
+    this.middlewares()
     this.database()
     this.routes()
     this.errorHandler()
@@ -21,10 +22,6 @@ class App {
     this.express.use(express.json())
     this.express.use(cors())
     this.express.use(express.static('uploads'))
-  }
-
-  private errorHandler() {
-    // this.express.use(customErrorMiddleware)
   }
 
   private database() {
