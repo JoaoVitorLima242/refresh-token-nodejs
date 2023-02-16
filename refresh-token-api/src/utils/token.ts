@@ -3,6 +3,7 @@ import { config } from '../config/vars'
 import argon2 from 'argon2'
 import { HttpError } from './error'
 import { RefreshTokenModel } from '../models'
+import { NextFunction, Request, Response } from 'express'
 
 export type AccessTokenObj = {
   userId: string
@@ -64,6 +65,31 @@ export const validateRefreshToken = async (token: string) => {
   if (tokenExists) {
     return decodedToken
   } else {
+    throw new HttpError(401, 'Unauthorized')
+  }
+}
+
+export const verifyAccessToken = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
+
+  if (!token) {
+    throw new HttpError(401, 'Unauthorized')
+  }
+
+  try {
+    const decodedToken = jwt.verify(
+      token,
+      config.JWT_ACCESS_TOKEN_SECRET,
+    ) as AccessTokenObj
+    req.userId = decodedToken.userId
+
+    next()
+  } catch (e) {
     throw new HttpError(401, 'Unauthorized')
   }
 }
