@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken'
 import { config } from '../config/vars'
 import argon2 from 'argon2'
 import { HttpError } from './error'
+import { RefreshTokenModel } from '../models'
+import e from 'express'
 
 export type AccessTokenObj = {
   userId: string
@@ -43,10 +45,26 @@ export const verifyPassword = async (
   }
 }
 
-export const validateRefreshToken = (token: string) => {
-  try {
-    return jwt.verify(token, config.JWT_REFRESH_TOKEN_SECRET) as RefreshTokenObj
-  } catch (e) {
+export const validateRefreshToken = async (token: string) => {
+  const decodeToken = () => {
+    try {
+      return jwt.verify(
+        token,
+        config.JWT_REFRESH_TOKEN_SECRET,
+      ) as RefreshTokenObj
+    } catch (e) {
+      throw new HttpError(401, 'Unauthorized')
+    }
+  }
+
+  const decodedToken = decodeToken()
+  const tokenExists = await RefreshTokenModel.exists({
+    _id: decodedToken.tokenId,
+  })
+
+  if (tokenExists) {
+    return decodedToken
+  } else {
     throw new HttpError(401, 'Unauthorized')
   }
 }

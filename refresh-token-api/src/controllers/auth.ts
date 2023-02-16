@@ -100,7 +100,9 @@ class AuthController {
       res: Response,
       session: ClientSession,
     ) {
-      const currentRefreshToken = validateRefreshToken(req.body.refreshToken)
+      const currentRefreshToken = await validateRefreshToken(
+        req.body.refreshToken,
+      )
       const userId = currentRefreshToken.userId
 
       const refreshTokenInstance = new RefreshTokenModel({
@@ -108,6 +110,10 @@ class AuthController {
       })
 
       await refreshTokenInstance.save({ session })
+      await RefreshTokenModel.deleteOne(
+        { _id: currentRefreshToken.tokenId },
+        { session },
+      )
 
       const refreshToken = createRefreshToken(userId, refreshTokenInstance._id)
       const accessToken = createAccessToken(userId)
