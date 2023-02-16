@@ -1,4 +1,4 @@
-import { Response } from 'express'
+import { Response, Request } from 'express'
 import { ClientSession } from 'mongoose'
 import argon2 from 'argon2'
 
@@ -8,13 +8,14 @@ import { RefreshTokenModel, UserModel } from '../models'
 import {
   createAccessToken,
   createRefreshToken,
+  validateRefreshToken,
   verifyPassword,
 } from '../utils/token'
 import { HttpError, errorHandler } from '../utils/error'
 import { withTransactions } from '../utils/transactions'
 
 class AuthController {
-  public signUp = errorHandler(
+  public signup = errorHandler(
     withTransactions(
       async (
         req: RequestWithBody<IUser>,
@@ -92,6 +93,31 @@ class AuthController {
         }
       },
     ),
+  )
+  public newRefreshToken = errorHandler(
+    withTransactions(async function (
+      req: RequestWithBody<{ refreshToken: string }>,
+      res: Response,
+      session: ClientSession,
+    ) {
+      const currentRefreshToken = validateRefreshToken(req.body.refreshToken)
+      const userId = currentRefreshToken.userId
+
+      const refreshTokenInstance = new RefreshTokenModel({
+        owner: userId,
+      })
+
+      await refreshTokenInstance.save({ session })
+
+      const refreshToken = createRefreshToken(userId, refreshTokenInstance._id)
+      const accessToken = createAccessToken(userId)
+
+      return {
+        id: userId,
+        accessToken,
+        refreshToken,
+      }
+    }),
   )
 }
 

@@ -3,6 +3,14 @@ import { config } from '../config/vars'
 import argon2 from 'argon2'
 import { HttpError } from './error'
 
+export type AccessTokenObj = {
+  userId: string
+}
+export type RefreshTokenObj = {
+  userId: string
+  tokenId: string
+}
+
 export const createAccessToken = (userId: string) => {
   return jwt.sign(
     {
@@ -37,7 +45,7 @@ export const verifyPassword = async (
 
 export const validateRefreshToken = (token: string) => {
   try {
-    return jwt.verify(token, config.JWT_REFRESH_TOKEN_SECRET)
+    return jwt.verify(token, config.JWT_REFRESH_TOKEN_SECRET) as RefreshTokenObj
   } catch (e) {
     throw new HttpError(401, 'Unauthorized')
   }
