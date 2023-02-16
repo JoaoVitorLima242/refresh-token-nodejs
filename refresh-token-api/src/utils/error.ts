@@ -6,7 +6,6 @@ type fn = (req: Request, res: Response) => Promise<any>
 export const errorHandler = (fn: fn) => {
   return async function (req: Request, res: Response, next: NextFunction) {
     try {
-      logger.error(req.body)
       const result = await fn(req, res)
       res.json(result)
     } catch (e) {
@@ -17,9 +16,9 @@ export const errorHandler = (fn: fn) => {
 
 export const customErrorMiddleware = (
   error: HttpError,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction,
+  _next: NextFunction,
 ) => {
   logger.error(error)
   res.status(error.statusCode || 500).send({ error: error.message })
