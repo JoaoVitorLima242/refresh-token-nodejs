@@ -6,8 +6,15 @@ type fn = (req: Request, res: Response, next: NextFunction) => Promise<any>
 export const errorHandler = (fn: fn) => {
   return async function (req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await fn(req, res, next)
-      res.json(result)
+      let nextCalled = false
+      const result = await fn(req, res, params => {
+        nextCalled = true
+        next(params)
+      })
+
+      if (!req.headersSent && !nextCalled) {
+        res.json(result)
+      }
     } catch (e) {
       next(e)
     }

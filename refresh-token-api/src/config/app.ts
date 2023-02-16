@@ -47,7 +47,7 @@ class App {
   private routes() {
     this.express.use('/', IndexRoutes)
     this.express.use('/auth', AuthRoutes)
-    this.express.use('/user', UserRoutes)
+    this.express.use('/users', UserRoutes)
   }
 }
 

@@ -4,6 +4,7 @@ import argon2 from 'argon2'
 import { HttpError } from './error'
 import { RefreshTokenModel } from '../models'
 import { NextFunction, Request, Response } from 'express'
+import logger from './logger'
 
 export type AccessTokenObj = {
   userId: string
@@ -76,6 +77,8 @@ export const verifyAccessToken = (
 ) => {
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
+
+  logger.info(token, 'token')
 
   if (!token) {
     throw new HttpError(401, 'Unauthorized')
