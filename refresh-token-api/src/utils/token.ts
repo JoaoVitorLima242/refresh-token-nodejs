@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken'
 import { config } from '../config/vars'
 import argon2 from 'argon2'
 import { HttpError } from './error'
-import logger from './logger'
 
 export const createAccessToken = (userId: string) => {
   return jwt.sign(
