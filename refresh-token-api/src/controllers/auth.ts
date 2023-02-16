@@ -90,6 +90,45 @@ class AuthController {
     ),
   )
 
+  public logout = errorHandler(
+    withTransactions(
+      async (
+        req: ReqWithRefreshToken,
+        res: Response,
+        session: ClientSession,
+      ) => {
+        const refreshToken = await validateRefreshToken(req.body.refreshToken)
+        await RefreshTokenModel.deleteOne(
+          { _id: refreshToken.tokenId },
+          { session },
+        )
+
+        return {
+          success: true,
+        }
+      },
+    ),
+  )
+  public logoutAll = errorHandler(
+    withTransactions(
+      async (
+        req: ReqWithRefreshToken,
+        res: Response,
+        session: ClientSession,
+      ) => {
+        const refreshToken = await validateRefreshToken(req.body.refreshToken)
+        await RefreshTokenModel.deleteMany(
+          { owner: refreshToken.userId },
+          { session },
+        )
+
+        return {
+          success: true,
+        }
+      },
+    ),
+  )
+
   public newRefreshToken = errorHandler(
     withTransactions(async function (
       req: ReqWithRefreshToken,
