@@ -31,9 +31,15 @@ export const verifyPassword = async (
 ) => {
   const passwordMatched = await argon2.verify(hasedPassword, rawPassword)
 
-  if (passwordMatched) {
-    logger.info('password match')
-  } else {
+  if (!passwordMatched) {
     throw new HttpError(401, 'Wrong username or password')
+  }
+}
+
+export const validateRefreshToken = (token: string) => {
+  try {
+    return jwt.verify(token, config.JWT_REFRESH_TOKEN_SECRET)
+  } catch (e) {
+    throw new HttpError(401, 'Unauthorized')
   }
 }

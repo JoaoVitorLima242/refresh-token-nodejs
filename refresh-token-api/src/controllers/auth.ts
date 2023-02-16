@@ -1,10 +1,10 @@
 import { Response } from 'express'
 import { ClientSession } from 'mongoose'
+import argon2 from 'argon2'
 
 import { RequestWithBody } from '../@types/express'
 import { IUser } from '../models/User'
 import { RefreshTokenModel, UserModel } from '../models'
-import argon2 from 'argon2'
 import {
   createAccessToken,
   createRefreshToken,
