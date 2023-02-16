@@ -14,14 +14,13 @@ import {
 import { HttpError, errorHandler } from '../utils/error'
 import { withTransactions } from '../utils/transactions'
 
+type ReqWithRefreshToken = RequestWithBody<{ refreshToken: string }>
+type ReqWithUser = RequestWithBody<IUser>
+
 class AuthController {
   public signup = errorHandler(
     withTransactions(
-      async (
-        req: RequestWithBody<IUser>,
-        _res: Response,
-        session: ClientSession,
-      ) => {
+      async (req: ReqWithUser, _res: Response, session: ClientSession) => {
         const { password, username } = req.body
 
         if (!password || !username)
@@ -56,11 +55,7 @@ class AuthController {
 
   public login = errorHandler(
     withTransactions(
-      async (
-        req: RequestWithBody<IUser>,
-        res: Response,
-        session: ClientSession,
-      ) => {
+      async (req: ReqWithUser, res: Response, session: ClientSession) => {
         const { password, username } = req.body
 
         const userInstance = await UserModel.findOne({
@@ -94,9 +89,10 @@ class AuthController {
       },
     ),
   )
+
   public newRefreshToken = errorHandler(
     withTransactions(async function (
-      req: RequestWithBody<{ refreshToken: string }>,
+      req: ReqWithRefreshToken,
       res: Response,
       session: ClientSession,
     ) {
@@ -124,6 +120,19 @@ class AuthController {
         refreshToken,
       }
     }),
+  )
+
+  public newAccessToken = errorHandler(
+    async (req: ReqWithRefreshToken, res: Response) => {
+      const refreshToken = await validateRefreshToken(req.body.refreshToken)
+      const accessToken = createAccessToken(refreshToken.userId)
+
+      return {
+        id: refreshToken.userId,
+        refreshToken: req.body.refreshToken,
+        accessToken,
+      }
+    },
   )
 }
 

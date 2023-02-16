@@ -3,7 +3,6 @@ import { config } from '../config/vars'
 import argon2 from 'argon2'
 import { HttpError } from './error'
 import { RefreshTokenModel } from '../models'
-import e from 'express'
 
 export type AccessTokenObj = {
   userId: string
